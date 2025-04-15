@@ -153,7 +153,6 @@ vim.opt.inccommand = 'split'
 -- Show which line your cursor is on
 vim.opt.cursorline = false
 
-
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 10
 
@@ -397,22 +396,22 @@ require('lazy').setup({
       -- [[ Configure Telescope ]]
       -- See `:help telescope` and `:help telescope.setup()`
       require('telescope').setup {
-          defaults = {
-    layout_strategy = "horizontal",
-    -- layout_config = {
-    --   horizontal = {
-    --     -- Width of the Telescope window as a percentage of total screen width
-    --     width = 0.999,
-    --     -- Width of the preview window as a percentage of the Telescope window width
-    --     preview_width = 0.6,
-    --     -- Height of the Telescope window as a percentage of total screen height
-    --     height = 0.999,
-    --     prompt_position = "top",
-    --   },
-    --       },
+        defaults = {
+          layout_strategy = 'horizontal',
+          layout_config = {
+            horizontal = {
+              -- Width of the Telescope window as a percentage of total screen width
+              -- width = 0.999,
+              -- Width of the preview window as a percentage of the Telescope window width
+              -- preview_width = 0.6,
+              -- Height of the Telescope window as a percentage of total screen height
+              -- height = 0.999,
+              prompt_position = 'top',
+            },
           },
-	  
-            -- You can put your default mappings / updates / etc. in here
+        },
+
+        -- You can put your default mappings / updates / etc. in here
         --  All the info you're looking for is in `:help telescope.setup()`
         --
         -- defaults = {
@@ -445,8 +444,6 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
       vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
       vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
-
-
 
       -- Slightly advanced example of overriding default behavior and theme
       vim.keymap.set('n', '<leader>/', function()
@@ -486,6 +483,7 @@ require('lazy').setup({
       },
     },
   },
+
   {
     -- Main LSP Configuration
     'neovim/nvim-lspconfig',
@@ -682,6 +680,7 @@ require('lazy').setup({
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
+
         -- clangd = {},
         -- gopls = {},
         -- pyright = {},
@@ -801,9 +800,9 @@ require('lazy').setup({
           -- Build Step is needed for regex support in snippets.
           -- This step is not supported in many windows environments.
           -- Remove the below condition to re-enable on windows.
-          if vim.fn.has 'win32' == 1 or vim.fn.executable 'make' == 0 then
-            return
-          end
+          -- if vim.fn.has 'win32' == 1 or vim.fn.executable 'make' == 0 then
+          --   return
+          -- end
           return 'make install_jsregexp'
         end)(),
         dependencies = {
@@ -825,7 +824,7 @@ require('lazy').setup({
     --- @type blink.cmp.Config
     opts = {
       keymap = {
-        
+
         -- 'default' (recommended) for mappings similar to built-in completions
         --   <c-y> to accept ([y]es) the completion.
         --    This will auto-import if your LSP supports it.
@@ -849,9 +848,19 @@ require('lazy').setup({
         -- See :h blink-cmp-config-keymap for defining your own keymap
         preset = 'default',
 
-    ['<Tab>'] = { 'select_and_accept' },
-    ['<C-k>'] = { 'select_prev', 'fallback_to_mappings' },
-    ['<C-j>'] = { 'select_next', 'fallback_to_mappings' },
+        ['<Return>'] = {
+          function(cmp)
+            if cmp.snippet_active() then
+              return cmp.accept()
+            else
+              return cmp.select_and_accept()
+            end
+          end,
+          'snippet_forward',
+          'fallback',
+        },
+        ['<C-k>'] = { 'select_prev', 'fallback_to_mappings' },
+        ['<C-j>'] = { 'select_next', 'fallback_to_mappings' },
 
         -- For more advanced Luasnip keymaps (e.g. selecting choice nodes, expansion) see:
         --    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
@@ -905,11 +914,10 @@ require('lazy').setup({
         styles = {
           comments = { italic = false }, -- Disable italics in comments
         },
-        
-      transparent = false, -- Enable this to disable setting the background color
-ransparent 
+
+        transparent = false, -- Enable this to disable setting the background color
+        ransparent,
       }
-      
 
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
@@ -1034,28 +1042,26 @@ ransparent
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
-vim.g.mapleader = " "
-vim.keymap.set("n", "<leader>e", vim.cmd.Ex)
-vim.keymap.set("n", "<leader>q", vim.cmd.q)
+vim.g.mapleader = ' '
+vim.keymap.set('n', '<leader>e', vim.cmd.Ex)
+vim.keymap.set('n', '<leader>q', vim.cmd.q)
 vim.opt.nu = true
 vim.opt.relativenumber = true
-vim.o.mouse = "a"
-
+vim.o.mouse = 'a'
 
 -- this sets the line numbers in netwr mode
 vim.g.netrw_bufsettings = 'noma nomod nu rnu nobl nowrap ro'
 
-
 local keymap = vim.keymap
 local opts = { noremap = true, silent = true }
-keymap.set("n", "<Leader>q", ":quit<Return>", opts)
-keymap.set("n", "<Leader>wv", ":split<Return>", opts)
-keymap.set("n", "<Leader>ws", ":vsplit<Return>", opts)
-keymap.set("n", "<Leader>bn", ":bnext<Return>", opts)
-keymap.set("n", "<Leader>bp", ":bprevious<Return>", opts)
+keymap.set('n', '<Leader>q', ':quit<Return>', opts)
+keymap.set('n', '<Leader>wv', ':split<Return>', opts)
+keymap.set('n', '<Leader>ws', ':vsplit<Return>', opts)
+keymap.set('n', '<Leader>bn', ':bnext<Return>', opts)
+keymap.set('n', '<Leader>bp', ':bprevious<Return>', opts)
 
 -- Normal mode: Ctrl+C copies selected text to system clipboard
-vim.keymap.set('v', '<C-c>', '"+y')  -- Visual mode copy
+vim.keymap.set('v', '<C-c>', '"+y') -- Visual mode copy
 
 -- Insert mode: Ctrl+V pastes from system clipboard
 vim.keymap.set('i', '<C-v>', '<C-r>+', { noremap = true })
@@ -1063,7 +1069,4 @@ vim.keymap.set('i', '<C-v>', '<C-r>+', { noremap = true })
 -- Normal mode: Ctrl+V pastes from clipboard
 vim.keymap.set('n', '<C-v>', '"+p', { noremap = true })
 
-vim.o.guicursor = "a:block"
-
-
-
+vim.o.guicursor = 'a:block'
