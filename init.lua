@@ -69,7 +69,7 @@ Kickstart Guide:
   I have left several `:help X` comments throughout the init.lua
     These are hints about where to find more information about the relevant settings,
     plugins or Neovim features used in Kickstart.
-
+b
    NOTE: Look for lines like this
 
     Throughout the file. These are for you, the reader, to help you understand what is happening.
@@ -297,6 +297,7 @@ require('lazy').setup({
       -- delay between pressing a key and opening which-key (milliseconds)
       -- this setting is independent of vim.opt.timeoutlen
       delay = 300,
+      preset = 'helix',
       icons = {
         -- set icon mappings to true if you have a Nerd Font
         mappings = vim.g.have_nerd_font,
@@ -398,6 +399,7 @@ require('lazy').setup({
       require('telescope').setup {
         defaults = {
           layout_strategy = 'horizontal',
+
           layout_config = {
             horizontal = {
               -- Width of the Telescope window as a percentage of total screen width
@@ -409,6 +411,8 @@ require('lazy').setup({
               prompt_position = 'top',
             },
           },
+
+          sorting_strategy = 'ascending',
         },
 
         -- You can put your default mappings / updates / etc. in here
@@ -440,10 +444,40 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
       vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
       vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
-      vim.keymap.set('n', '<leader>sb', builtin.current_buffer_fuzzy_find, { desc = '[S]earch current [B]uffer' })
+      -- vim.keymap.set('n', '<leader>sb', function()
+      --   builtin.current_buffer_fuzzy_find {
+      --     previewer = false,
+      --   }
+      -- end, { desc = '[S]earch current [B]uffer' })
+
+      vim.keymap.set('n', '<leader>sb', function()
+        -- You can pass additional configuration to Telescope to change the theme, layout, etc.
+        builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
+          winblend = 20,
+          previewer = false,
+        })
+      end, { desc = '[S]earch current [B]uffer' })
+      vim.keymap.set('n', '<leader>sm', function()
+        builtin.marks {
+          previewer = true,
+          mark_type = 'local',
+        }
+      end, { desc = '[S]earch current [M]arks Local' })
+      vim.keymap.set('n', '<leader>sM', function()
+        builtin.marks {
+          previewer = true,
+          mark_type = 'global',
+        }
+      end, { desc = '[S]earch current [M]arks global' })
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
       vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
-      vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
+      vim.keymap.set('n', '<leader><leader>', function()
+        builtin.buffers {
+          initial_mode = 'normal',
+          previewer = false,
+          te,
+        }
+      end, { desc = '[ ] Find existing buffers' })
 
       -- Slightly advanced example of overriding default behavior and theme
       vim.keymap.set('n', '<leader>/', function()
@@ -901,7 +935,14 @@ require('lazy').setup({
     },
   },
 
-  { -- You can easily change to a different colorscheme.
+  -- NOTE: sets the marks on the side
+  {
+    'chentoast/marks.nvim',
+    event = 'VeryLazy',
+    opts = {},
+  },
+
+  { -- You can easily change to a different cblorscheme.
     -- Change the name of the colorscheme plugin below, and then
     -- change the command in the config to whatever the name of that colorscheme is.
     --
@@ -916,18 +957,42 @@ require('lazy').setup({
         },
 
         transparent = false, -- Enable this to disable setting the background color
-        ransparent,
       }
 
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'default'
+      -- vim.cmd.colorscheme 'default'
+    end,
+  },
+  {
+    'alexxGmZ/e-ink.nvim',
+    priority = 1000,
+    config = function()
+      require('e-ink').setup()
+      vim.cmd.colorscheme 'e-ink'
+
+      -- choose light mode or dark mode
+      -- vim.opt.background = "dark"
+      -- vim.opt.background = "light"
+      --
+      -- or do
+      -- :set background=dark
+      -- :set background=light
     end,
   },
 
   -- Highlight todo, notes, etc in comments
-  { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
+  {
+    'folke/todo-comments.nvim',
+    event = 'VimEnter',
+    dependencies = { 'nvim-lua/plenary.nvim' },
+    opts = { signs = false },
+    keys = {
+
+      { '<leader>st', '<cmd>TodoTelescope<cr>', desc = '[T]odo' },
+    },
+  },
 
   { -- Collection of various small independent plugins/modules
     'echasnovski/mini.nvim',
@@ -1069,4 +1134,10 @@ vim.keymap.set('i', '<C-v>', '<C-r>+', { noremap = true })
 -- Normal mode: Ctrl+V pastes from clipboard
 vim.keymap.set('n', '<C-v>', '"+p', { noremap = true })
 
-vim.o.guicursor = 'a:block'
+vim.o.background = 'dark'
+vim.cmd 'highlight Normal guibg=#000000'
+
+vim.cmd 'highlight LineNr guifg=#cccc68'
+vim.opt.guicursor = {
+  'n-v-c:block', -- normal, visual, command: block
+}
