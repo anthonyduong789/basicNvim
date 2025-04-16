@@ -297,7 +297,7 @@ require('lazy').setup({
       -- delay between pressing a key and opening which-key (milliseconds)
       -- this setting is independent of vim.opt.timeoutlen
       delay = 300,
-      preset = 'helix',
+      preset = 'modern',
       icons = {
         -- set icon mappings to true if you have a Nerd Font
         mappings = vim.g.have_nerd_font,
@@ -334,6 +334,10 @@ require('lazy').setup({
           F12 = '<F12>',
         },
       },
+      win = {
+        no_overlap = false,
+      },
+
 
       -- Document existing key chains
       spec = {
@@ -447,13 +451,14 @@ require('lazy').setup({
       -- vim.keymap.set('n', '<leader>sb', function()
       --   builtin.current_buffer_fuzzy_find {
       --     previewer = false,
+      --
       --   }
       -- end, { desc = '[S]earch current [B]uffer' })
 
       vim.keymap.set('n', '<leader>sb', function()
         -- You can pass additional configuration to Telescope to change the theme, layout, etc.
         builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
-          winblend = 20,
+          winblend = 0,
           previewer = false,
         })
       end, { desc = '[S]earch current [B]uffer' })
@@ -475,7 +480,6 @@ require('lazy').setup({
         builtin.buffers {
           initial_mode = 'normal',
           previewer = false,
-          te,
         }
       end, { desc = '[ ] Find existing buffers' })
 
